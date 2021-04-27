@@ -15,7 +15,6 @@ if(!isset($_SESSION['email_id'])){
 		$run_user = mysqli_query($con,$get_user);
 		$row = mysqli_fetch_array($run_user);
 
-		//$user_name = $row['user_name'];
 	?>
 	<title><?php echo "$user_name"; ?></title>
 	<meta charset="utf-8">
@@ -30,7 +29,7 @@ if(!isset($_SESSION['email_id'])){
 	<div id="insert_post" class="col-sm-12">
 		<center>
 		<form action="home.php?id=<?php echo $user_id; ?>" method="post" id="f" enctype="multipart/form-data">
-		<textarea class="form-control" id="content" rows="4" name="content" placeholder="What's on your mind?"></textarea><br>
+		<textarea class="form-control" id="post_content" rows="4" name="post_content" placeholder="What's on your mind?"></textarea><br>
 		<label class="btn btn-warning" id="upload_image_button">Select Image
 		<input type="file" name="upload_image" size="30">
 		</label>

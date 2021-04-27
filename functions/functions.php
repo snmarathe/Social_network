@@ -1,31 +1,31 @@
 <?php
-
-$con = mysqli_connect("localhost","root","wamppass1","social_network") or die("Connection was not established");
-
-//function for inserting post
+include("includes/connection.php");
 
 function insertPost(){
 	if(isset($_POST['sub'])){
 		global $con;
 		global $user_id;
 
-		$content = htmlentities($_POST['content']);
+		$content = htmlentities($_POST['post_content']);
 		$upload_image = $_FILES['upload_image']['name'];
 		$image_tmp = $_FILES['upload_image']['tmp_name'];
-		$random_number = rand(1, 100);
+
+		$r = "SELECT COUNT(*) FROM `posts` WHERE 1";
+		$nump = mysqli_query($con, $r);
+		$nump_t = $nump->fetch_array()[0] ?? '';
 
 		if(strlen($content) > 250){
 			echo "<script>alert('Please use less than 250 words!')</script>";
 			echo "<script>window.open('home.php', '_self')</script>";
 		}else{
 			if(strlen($upload_image) >= 1 && strlen($content) >= 1){
-				move_uploaded_file($image_tmp, "imagepost/$upload_image.$random_number");
-				$insert = "insert into posts (user_id, post_content, upload_image, post_date) values('$user_id', '$content', '$upload_image.$random_number', NOW())";
+				move_uploaded_file($image_tmp, "imagepost/$upload_image");
+				$insert_query = "INSERT INTO `posts` (`post_id`,`user_id`, `post_content`, `post_image`, `post_time`) VALUES ('$nump_t','$user_id', '$content', '$upload_image', 'CURRENT_TIMESTAMP')";
 
-				$run = mysqli_query($con, $insert);
+				$run = mysqli_query($con, $insert_query);
 
 				if($run){
-					echo "<script>alert('Your Post updated a moment ago!')</script>";
+					echo "<script>alert('Your post is published!')</script>";
 					echo "<script>window.open('home.php', '_self')</script>";
 
 					$update = "update users set posts='yes' where user_id='$user_id'";
@@ -35,16 +35,16 @@ function insertPost(){
 				exit();
 			}else{
 				if($upload_image=='' && $content == ''){
-					echo "<script>alert('Error Occured while uploading!')</script>";
+					echo "<script>alert('Error occured while uploading!')</script>";
 					echo "<script>window.open('home.php', '_self')</script>";
 				}else{
 					if($content==''){
-						move_uploaded_file($image_tmp, "imagepost/$upload_image.$random_number");
-						$insert = "insert into posts (user_id,post_content,upload_image,post_date) values ('$user_id','No','$upload_image.$random_number',NOW())";
+						move_uploaded_file($image_tmp, "imagepost/$upload_image");
+						$insert = "INSERT INTO `posts` (`post_id`,`user_id`, `post_content`, `post_image`, `post_time`) values ('$nump_t','$user_id','$content','$upload_image','CURRENT_TIMESTAMP')";
 						$run = mysqli_query($con, $insert);
 
 						if($run){
-							echo "<script>alert('Your Post updated a moment ago!')</script>";
+							echo "<script>alert('Your post is published!')</script>";
 							echo "<script>window.open('home.php', '_self')</script>";
 
 							$update = "update users set posts='yes' where user_id='$user_id'";
@@ -53,11 +53,11 @@ function insertPost(){
 
 						exit();
 					}else{
-						$insert = "insert into posts (user_id, post_content, post_date) values('$user_id', '$content', NOW())";
+						$insert = "INSERT INTO `posts` (`post_id`,`user_id`, `post_content`, `post_time`) values ('$nump_t','$user_id', '$content', NOW())";
 						$run = mysqli_query($con, $insert);
 
 						if($run){
-							echo "<script>alert('Your Post updated a moment ago!')</script>";
+							echo "<script>alert('Your post is published!')</script>";
 							echo "<script>window.open('home.php', '_self')</script>";
 
 							$update = "update users set posts='yes' where user_id='$user_id'";
@@ -82,28 +82,31 @@ function get_posts(){
 
 	$start_from = ($page-1) * $per_page;
 
-	$get_posts = "select * from posts ORDER by 1 DESC LIMIT $start_from, $per_page";
+	$r = "SELECT COUNT(*) FROM `posts` WHERE 1";
+	$nump = mysqli_query($con, $r);
+	$nump_t = $nump->fetch_array()[0] ?? '';
+	
+	for($c=0; $c<$nump_t; $c++){
 
-	$run_posts = mysqli_query($con, $get_posts);
+		$post_id = $c;
+		$select_post = "select * from posts where post_id='$post_id'";
+		$run_post = mysqli_query($con,$select_post);
+		$row=mysqli_fetch_array($run_post);
 
-	while($row_posts = mysqli_fetch_array($run_posts)){
+		$user_id = $row['user_id'];
+		$content = substr($row['post_content'], 0,40);
+		$upload_image = $row['post_image'];
+		$post_date = $row['post_time'];
 
-		$post_id = $row_posts['post_id'];
-		$user_id = $row_posts['user_id'];
-		$content = substr($row_posts['post_content'], 0,40);
-		$upload_image = $row_posts['upload_image'];
-		$post_date = $row_posts['post_date'];
-
-		$user = "select *from users where user_id='$user_id' AND posts='yes'";
+		$user = "select * from users where user_id='$user_id' AND posts='yes'";
 		$run_user = mysqli_query($con,$user);
 		$row_user = mysqli_fetch_array($run_user);
 
-		$user_name = $row_user['user_name'];
-		$user_image = $row_user['user_image'];
+		$first_name = $row_user['first_name'];
+		$user_image = $row_user['profile_pic'];
 
-		//now displaying posts from database
 
-		if($content=="No" && strlen($upload_image) >= 1){
+		if($content=="" && strlen($upload_image) >= 1){
 			echo"
 			<div class='row'>
 				<div class='col-sm-3'>
@@ -114,7 +117,7 @@ function get_posts(){
 						<p><img src='users/$user_image' class='img-circle' width='100px' height='100px'></p>
 						</div>
 						<div class='col-sm-6'>
-							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$user_name</a></h3>
+							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$first_name</a></h3>
 							<h4><small style='color:black;'>Updated a post on <strong>$post_date</strong></small></h4>
 						</div>
 						<div class='col-sm-4'>
@@ -144,7 +147,7 @@ function get_posts(){
 						<p><img src='users/$user_image' class='img-circle' width='100px' height='100px'></p>
 						</div>
 						<div class='col-sm-6'>
-							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$user_name</a></h3>
+							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$first_name</a></h3>
 							<h4><small style='color:black;'>Updated a post on <strong>$post_date</strong></small></h4>
 						</div>
 						<div class='col-sm-4'>
@@ -175,7 +178,7 @@ function get_posts(){
 						<p><img src='users/$user_image' class='img-circle' width='100px' height='100px'></p>
 						</div>
 						<div class='col-sm-6'>
-							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$user_name</a></h3>
+							<h3><a style='text-decoration:none; cursor:pointer;color #3897f0;' href='user_profile.php?u_id=$user_id'>$first_name</a></h3>
 							<h4><small style='color:black;'>Updated a post on <strong>$post_date</strong></small></h4>
 						</div>
 						<div class='col-sm-4'>
@@ -195,7 +198,6 @@ function get_posts(){
 		}
 	}
 
-	include("pagination.php");
 }
 
 ?>

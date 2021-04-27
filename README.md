@@ -2,6 +2,7 @@
 ## Social network
 ## Primary key - User, 
 * user ID
+* password
 * name
 * email ID
 * phone

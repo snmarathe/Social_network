@@ -1,5 +1,5 @@
 # Object oriented organization (planned)
-## Social_network
+## Social network
 ## Primary key - User, 
 * user ID
 * name
@@ -8,6 +8,14 @@
 * mailbox
 * post_list
 * friends_list
+### Associated functions
+* requestFriend()
+* rejectFriend()
+* acceptFriend() 
+* createPost()
+* deletePost()
+* editPost()
+* likePost()
   
 ## Primary key - Post
 * post ID
@@ -21,12 +29,3 @@
 * date
 * content
 
-## Functions
-* requestFriend()
-* rejectFriend()
-* acceptFriend() 
-* createPost()
-* deletePost()
-* editPost()
-* likePost()
-* sendNewNotif()

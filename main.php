@@ -16,7 +16,7 @@
 	    background-repeat: no-repeat;
 	    background-attachment: fixed;
 	    background-size: cover;
-        overflow-x: hidden;
+      overflow-x: hidden;
     }
     #centered1{
         position: absolute;
@@ -65,31 +65,31 @@
     <div class="row">
         <div>
             <div class="well">
-                <center><h1 style="color:white;">Finsta</h1></center>
+                <center><h2 style="color:white;">Finsta</h2></center>
             </div>
         </div>
     </div>
     <div class ="row">
-        <div class = "col-sm-6" style="left:8%;">
-            <img src="images/finstalogo.jpg" class="img-rounded" title="finsta" width="80px" height="80px">
-            <h2><strong>See what's happening in <br> the world right now</strong><br><br></h2>
+        <div class = "col-sm-6" style="left:30%;">
+            <img src="images/logo.png" class="img-rounded" title="finsta" width="80px" height="80px">
+            <h2><strong>Rewamp your online presence. <br>Experience the world at your fingertips.</strong><br><br></h2>
             <h4><strong>Join Finsta Today.</strong></h4>
             <form method="post">
-                <button id = "signup" class = "btn btn-info btn-lg" name = "signup">Sign Up</button>
+                <button id = "signup" class = "btn btn-primary btn-lg" name = "signup">Sign Up</button>
                 <?php
                     if(isset($_POST['signup'])){
                         echo "<script>window.open('signup.php','_self')</script>";
                     }
                 ?>
-                <button id = "login" class = "btn btn-info btn-lg" name = "login">Login</button>
+                <button id = "login" class = "btn btn-primary btn-lg" name = "login">Login</button>
                 <?php
                     if(isset($_POST['login'])){
                         echo "<script>window.open('signin.php','_self')</script>";
                     }
                 ?>
-            </form> 
+            </form>
         </div>
     </div>
-    
+
 </body>
 </html>

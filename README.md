@@ -23,7 +23,6 @@
 * post image
 * post content
 * likes
-* comments
 * hashtags
 
 ## Primary key - Notification
